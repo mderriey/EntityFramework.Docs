@@ -1,5 +1,6 @@
 ---
 title: Collations and case sensitivity - EF Core
+description: How to configure collations and case-sensitivity in the database and on queries
 author: roji
 ms.date: 04/27/2020
 ms.assetid: bde4e0ee-fba3-4813-a849-27049323d301
@@ -8,7 +9,7 @@ uid: core/miscellaneous/collations-and-case-sensitivity.md
 # Collations and Case Sensitivity
 
 > [!NOTE]
-> The APIs shown on this page are being introduced in EF Core 5.0, which is still in preview.
+> This feature is introduced in EF Core 5.0.
 
 Text processing in databases can be a complex, and requires more user attention that one would suspect. For one thing, databases vary considerably in how they handle text; for example, while some databases are case-sensitive by default (e.g. Sqlite, PostgreSQL), others are case-insensitive (SQL Server, MySQL). In addition, because of index usage, case-sensitivity and similar aspects can have a far-reaching impact on query performance: while it may be tempting to use `string.Lower` to force a case-insensitive comparison in a case-sensitive database, doing so may prevent your application from using indexes. This page details how to configure case sensitivity, or more generally, collations, and how to do so in an efficient way without compromising query performance.
 
@@ -22,7 +23,7 @@ All text operations in a database use a collation - whether explicitly or implic
 
 In most database systems, a default collation is defined at the database level; unless overridden, that collation implicitly applies to all text operations occurring within that database. The database collation is typically set at database creation time (via the `CREATE DATABASE` DDL statement), and if not specified, defaults to a some server-level value determined at setup time. For example, the default server-level collation in SQL Server is `SQL_Latin1_General_CP1_CI_AS`, which is a case-insensitive, accent-sensitive collation. Although database systems usually do permit altering the collation of an existing database, doing so can lead to complications; it is recommended to pick a collation before database creation.
 
-The following code in your model's `OnModelCreating` method configures a SQL Server database to use a case-sensitive collation:
+When using EF Core migrations to manage your database schema, the following in your model's `OnModelCreating` method configures a SQL Server database to use a case-sensitive collation:
 
 [!code-csharp[Main](../../../samples/core/Miscellaneous/Collations/Program.cs?range=40)]
 
@@ -30,7 +31,7 @@ The following code in your model's `OnModelCreating` method configures a SQL Ser
 
 Collations can also be defined on text columns, overriding the database default. This can be useful if certain columns need to be case-insensitive, while the rest of the database needs to be case-sensitive.
 
-The following configures the column for the `Name` property to be case-insensitive in a database that is otherwise configured to be case-sensitive:
+When using EF Core migrations to manage your database schema, the following configures the column for the `Name` property to be case-insensitive in a database that is otherwise configured to be case-sensitive:
 
 [!code-csharp[Main](../../../samples/core/Miscellaneous/Collations/Program.cs?name=OnModelCreating&highlight=6)]
 
@@ -65,5 +66,7 @@ In addition, .NET provides overloads of [`string.Equals`](https://docs.microsoft
 
 ## Database-specific information
 
-* [SQL Server documentation on collations](https://docs.microsoft.com/sql/relational-databases/collations/collation-and-unicode-support)
-* *MORE NEEDED*
+* [SQL Server documentation on collations](https://docs.microsoft.com/sql/relational-databases/collations/collation-and-unicode-support).
+* [Microsoft.Data.Sqlite documentation on collations](https://docs.microsoft.com/dotnet/standard/data/sqlite/collation).
+* [PostgreSQL documentation on collations](https://www.postgresql.org/docs/current/collation.html).
+* [MySQL documentation on collations](https://dev.mysql.com/doc/refman/en/charset-general.html).
